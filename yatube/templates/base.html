@@ -11,6 +11,18 @@
     <meta name="msapplication-TileColor" content="#da532c">
     <meta name="theme-color" content="#ffffff">
     <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <style type="text/css">
+      .card {
+        background: #eee;
+        box-shadow: rgb(0 0 0 / 20%) 5px 5px 15px;
+      }
+      .card-header {
+        background-color: #efca66
+      }
+      .bt {
+        text-align: right;
+      }
+    </style>
     <title>
     {% block title %}
         Последние обновления на сайте
@@ -18,16 +30,12 @@
     </title>
   </head>
   <body>
-    <header>
-      {% include 'includes/header.html' %}  
-    </header>
+    {% include 'includes/header.html' %}
     <main>
       {% block content %}
         Контент не подвезли :(
       {% endblock %}
     </main>
-    <footer class="border-top text-center py-3">
-      {% include 'includes/footer.html' %}
-    </footer>
+    {% include 'includes/footer.html' %}
   </body>
 </html>

@@ -1,21 +1,26 @@
 {% extends 'base.html' %}
 {% block title %}
-    Главная
+  Последние обновления на сайте
 {% endblock %}
 {% block content %}
-    <div class="container py-5">
-    {% for post in posts %}
-        <ul>
-            <li>
-                Автор: {{ post.author.get_full_name }}
-            </li>
-            <li>
-                Дата публикации: {{ post.pub_date|date:"d E Y" }}
-            </li>
-        </ul>
-        <p>{{ post.text }}</p>    
-        <a href="">все записи группы</a>
-        {% if not forloop.last %}<hr>{% endif %}
-    {% endfor %} 
-    </div>
+<div class="container py-5 col-5">
+<h1>Последние обновления на сайте</h1><hr>
+{% for post in posts %}
+<div class="card">
+  <div class="card-header">
+    <span>Автор: {{ post.author.get_full_name }}</span>
+    <span>Дата публикации: {{ post.pub_date|date:"d E Y" }}</span>
+  </div>
+  <div class="card-body">
+  <p>{{ post.text|linebreaksbr|safe }}</p>
+  {% if post.group %}
+  <div class="bt">
+    <a href="{% url 'posts:group_list' post.group.slug %}" class="btn btn-outline-dark">все записи группы</a>
+  </div>
+  {% endif %}
+  </div>
+</div>
+{% if not forloop.last %}<br>{% endif %}
+{% endfor %}
+</div>
 {% endblock %}
