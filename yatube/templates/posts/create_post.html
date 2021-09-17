@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block title %}
+  {% if is_edit %}Редактировать пост{% else %}Добавить запись{% endif %}
+{% endblock %}
+{% block content %}
+  <div class="card shadow">
+    <div class="card-header text-white-50 bg-dark">
+      {% if is_edit %}Редактировать пост{% else %}Добавить запись{% endif %}
+    </div>
+    <div class="card-body">
+      {% include 'includes/form_error.html' %}
+      <form method="post" action="{% if is_edit %}{% url 'posts:post_edit' form.instance.pk %}{% else %}{% url 'posts:post_create' %}{% endif %}">
+        {% include 'includes/form.html' %}
+        <div class="d-flex">
+          <button type="submit" class="flex-fill btn btn-outline-dark">
+            {% if is_edit %}Сохранить{% else %}Добавить{% endif %}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+{% endblock %}

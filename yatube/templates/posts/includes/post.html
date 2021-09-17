@@ -1,0 +1,24 @@
+<div class="card my-4 shadow">
+  <div class="card-header text-white-50 bg-dark">
+    <div class="d-flex justify-content-between">
+      <span>
+        Автор:
+        <a href="{% url 'posts:profile' post.author.username %}" class="link-light text-decoration-none">
+          {{ post.author.username }}
+        </a>
+        {% if post.group and show_group %}
+          Группа:
+          <a href="{% url 'posts:group_list' post.group.slug %}" class="link-light text-decoration-none">
+            {{ post.group.title }}
+          </a>
+        {% endif %}
+      </span>
+      <span>Дата публикации: {{ post.pub_date|date:"d E Y" }}</span>
+    </div>
+  </div>
+  <div class="card-body">
+    <a href="{% url 'posts:post_detail' post.id %}" class="link-dark text-decoration-none">
+      <p>{{ post.text|linebreaksbr }}</p>
+    </a>
+  </div>
+</div>

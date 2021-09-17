@@ -3,24 +3,9 @@
   Последние обновления на сайте
 {% endblock %}
 {% block content %}
-<div class="container py-5 col-5">
-<h1>Последние обновления на сайте</h1><hr>
-{% for post in posts %}
-<div class="card">
-  <div class="card-header">
-    <span>Автор: {{ post.author.get_full_name }}</span>
-    <span>Дата публикации: {{ post.pub_date|date:"d E Y" }}</span>
-  </div>
-  <div class="card-body">
-  <p>{{ post.text|linebreaksbr|safe }}</p>
-  {% if post.group %}
-  <div class="bt">
-    <a href="{% url 'posts:group_list' post.group.slug %}" class="btn btn-outline-dark">все записи группы</a>
-  </div>
-  {% endif %}
-  </div>
-</div>
-{% if not forloop.last %}<br>{% endif %}
-{% endfor %}
-</div>
+  <h1>Последние обновления на сайте</h1><hr>
+  {% for post in page_obj %}
+    {% include 'posts/includes/post.html' with show_group=True %}
+  {% endfor %}
+  {% include 'posts/includes/paginator.html' %}
 {% endblock %}
