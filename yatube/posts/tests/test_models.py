@@ -17,13 +17,11 @@ class PostModelTest(TestCase):
         )
 
     def test_post_have_correct_object_names(self):
-        """Проверяем, корректность работы __str__ в Post."""
         post = PostModelTest.post
         post_str = str(post)
         self.assertEqual(post_str, post.text[:15])
 
     def test_post_have_correct_verbose_name(self):
-        """Проверяем, корректность работы verbose_name в Post."""
         post = PostModelTest.post
         field_verboses = {
             'text': 'Текст',
@@ -38,7 +36,6 @@ class PostModelTest(TestCase):
                 )
 
     def test_post_have_correct_help_text(self):
-        """Проверяем, корректность работы help_text в Post."""
         post = PostModelTest.post
         field_help = {
             'text': 'Введите текст поста',
@@ -62,13 +59,11 @@ class GroupModelTest(TestCase):
         )
 
     def test_group_have_correct_object_names(self):
-        """Проверяем, корректность работы __str__ в Group."""
         group = GroupModelTest.group
         group_str = str(group)
         self.assertEqual(group_str, group.title)
 
     def test_group_have_correct_verbose_name(self):
-        """Проверяем, корректность работы verbose_name в Group."""
         group = GroupModelTest.group
         field_verboses = {
             'title': 'Заголовок',

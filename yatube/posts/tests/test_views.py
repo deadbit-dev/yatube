@@ -1,11 +1,19 @@
+import shutil
+import tempfile
+
+from django.conf import settings
+from django.core.files.uploadedfile import SimpleUploadedFile
+from django.core.cache import cache
 from django.contrib.auth import get_user_model
-from django.test import Client, TestCase
+from django.test import Client, TestCase, override_settings
+
 from django.urls import reverse
 from django import forms
 
-from ..models import Post, Group
+from ..models import Post, Group, Follow
 
 User = get_user_model()
+TEMP_MEDIA_ROOT = tempfile.mkdtemp(dir=settings.BASE_DIR)
 
 
 class PaginatorTest(TestCase):
@@ -17,35 +25,36 @@ class PaginatorTest(TestCase):
         cls.user_client.force_login(cls.user)
         cls.count_posts_on_page = 10
         cls.count_posts = 15
+        cls.total_posts = cls.count_posts % cls.count_posts_on_page
         cls.group = Group.objects.create(
             title='Тестовый заголовок',
             slug='test-slug',
             description='Описание...'
         )
-        cls.posts = (
+        posts = (
             Post(
                 text='Тестовый текст поста.',
                 author=cls.user,
-                group=cls.group if i <= cls.count_posts_on_page else None
+                group=cls.group
             ) for i in range(cls.count_posts)
         )
-        Post.objects.bulk_create(cls.posts, cls.count_posts)
+        Post.objects.bulk_create(posts, cls.count_posts)
 
     def test_paginator_pages(self):
-        pages_paginator = {
+        pages_paginator = [
             reverse(
                 'posts:index'
-            ): PaginatorTest.count_posts % PaginatorTest.count_posts_on_page,
+            ),
             reverse(
                 'posts:group_list',
                 kwargs={'slug': PaginatorTest.group.slug}
-            ): 1,
+            ),
             reverse(
                 'posts:profile',
                 kwargs={'username': PaginatorTest.user}
-            ): PaginatorTest.count_posts % PaginatorTest.count_posts_on_page
-        }
-        for page, total in pages_paginator.items():
+            )
+        ]
+        for page in pages_paginator:
             with self.subTest(page=page):
                 response = PaginatorTest.user_client.get(page)
                 self.assertEqual(
@@ -56,9 +65,13 @@ class PaginatorTest(TestCase):
                 response = PaginatorTest.user_client.get(
                     page + '?page=2'
                 )
-                self.assertEqual(len(response.context['page_obj']), total)
+                self.assertEqual(
+                    len(response.context['page_obj']),
+                    PaginatorTest.total_posts
+                )
 
 
+@override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
 class PostPagesTests(TestCase):
     @classmethod
     def setUpClass(cls):
@@ -66,6 +79,19 @@ class PostPagesTests(TestCase):
         cls.user = User.objects.create_user(username='NoName')
         cls.user_client = Client()
         cls.user_client.force_login(cls.user)
+        small_gif = (
+            b'\x47\x49\x46\x38\x39\x61\x02\x00'
+            b'\x01\x00\x80\x00\x00\x00\x00\x00'
+            b'\xFF\xFF\xFF\x21\xF9\x04\x00\x00'
+            b'\x00\x00\x00\x2C\x00\x00\x00\x00'
+            b'\x02\x00\x01\x00\x00\x02\x02\x0C'
+            b'\x0A\x00\x3B'
+        )
+        image = SimpleUploadedFile(
+            name='small.gif',
+            content=small_gif,
+            content_type='image/gif'
+        )
         cls.group = Group.objects.create(
             title='Тестовый заголовок',
             slug='test-slug',
@@ -73,9 +99,15 @@ class PostPagesTests(TestCase):
         )
         cls.post = Post.objects.create(
             text='Тестовый текст поста.',
+            image=image,
             author=cls.user,
             group=cls.group
         )
+
+    @classmethod
+    def tearDownClass(cls):
+        super().tearDownClass()
+        shutil.rmtree(TEMP_MEDIA_ROOT, ignore_errors=True)
 
     def test_pages_uses_correct_template(self):
         templates_pages_names = {
@@ -103,9 +135,16 @@ class PostPagesTests(TestCase):
                 response = PostPagesTests.user_client.get(reverse_name)
                 self.assertTemplateUsed(response, template)
 
+    def check_post_context(self, post):
+        self.assertEqual(post.id, PostPagesTests.post.id)
+        self.assertEqual(post.author, PostPagesTests.post.author)
+        self.assertEqual(post.text, PostPagesTests.post.text)
+        self.assertEqual(post.image, PostPagesTests.post.image)
+        self.assertEqual(post.group, PostPagesTests.post.group)
+
     def test_index_page_context(self):
         response = PostPagesTests.user_client.get(reverse('posts:index'))
-        self.assertIsNotNone(response.context['page_obj'])
+        self.check_post_context(response.context['page_obj'][0])
 
     def test_group_list_page_context(self):
         response = PostPagesTests.user_client.get(
@@ -114,8 +153,25 @@ class PostPagesTests(TestCase):
                 kwargs={'slug': PostPagesTests.group.slug}
             )
         )
-        self.assertIsNotNone(response.context['page_obj'])
-        self.assertIsNotNone(response.context['group'])
+        self.check_post_context(response.context['page_obj'][0])
+        self.assertEqual(
+            PostPagesTests.group,
+            response.context['group']
+        )
+
+    def test_new_group_list_none(self):
+        group = Group.objects.create(
+            title='Тестовый заголовок',
+            slug='test-slug-new',
+            description='Описание...'
+        )
+        response = PostPagesTests.user_client.get(
+            reverse(
+                'posts:group_list',
+                kwargs={'slug': group.slug}
+            )
+        )
+        self.assertEqual(len(response.context['page_obj']), 0)
 
     def test_profile_page_context(self):
         response = PostPagesTests.user_client.get(
@@ -124,8 +180,12 @@ class PostPagesTests(TestCase):
                 kwargs={'username': PostPagesTests.user}
             )
         )
-        self.assertIsNotNone(response.context['page_obj'])
-        self.assertIsNotNone(response.context['author'])
+        self.check_post_context(response.context['page_obj'][0])
+        self.assertEqual(
+            PostPagesTests.user,
+            response.context['author']
+        )
+        self.assertIsNotNone(response.context['following'])
 
     def test_post_detail_page_context(self):
         response = PostPagesTests.user_client.get(
@@ -134,7 +194,13 @@ class PostPagesTests(TestCase):
                 kwargs={'post_id': PostPagesTests.post.id}
             )
         )
-        self.assertIsNotNone(response.context['post'])
+        self.check_post_context(response.context['post'])
+        form_fields = {'text': forms.fields.CharField}
+        for value, expected in form_fields.items():
+            with self.subTest(value=value):
+                form_fields = response.context['form'].fields.get(value)
+                self.assertIsInstance(form_fields, expected)
+        self.assertIsNotNone(response.context['comments'])
 
     def test_edit_post_page_context(self):
         response = PostPagesTests.user_client.get(
@@ -168,26 +234,85 @@ class PostPagesTests(TestCase):
                 form_fields = response.context['form'].fields.get(value)
                 self.assertIsInstance(form_fields, expected)
 
-    def test_have_post_on_pages(self):
+    def test_cache_index(self):
         post = Post.objects.create(
             text='Тестовый текст поста.',
             author=PostPagesTests.user,
-            group=PostPagesTests.group
         )
-        pages = [
-            reverse('posts:index'),
+        response = PostPagesTests.user_client.get(
+            reverse('posts:index')
+        )
+        page = response.content
+        post.delete()
+        response = PostPagesTests.user_client.get(
+            reverse('posts:index')
+        )
+        self.assertEqual(page, response.content)
+        cache.clear()
+        response = PostPagesTests.user_client.get(
+            reverse('posts:index')
+        )
+        self.assertNotEqual(page, response.content)
+
+
+class FollowTests(TestCase):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.user = User.objects.create_user(username='NoName')
+        cls.user_client = Client()
+        cls.user_client.force_login(cls.user)
+        cls.author = User.objects.create_user(username='Author')
+        cls.author_client = Client()
+        cls.author_client.force_login(cls.author)
+
+    def setUp(self):
+        FollowTests.user_client.get(
             reverse(
-                'posts:group_list',
-                kwargs={'slug': PostPagesTests.group.slug}
-            ),
-            reverse(
-                'posts:profile',
-                kwargs={'username': PostPagesTests.user}
+                'posts:profile_follow',
+                kwargs={'username': FollowTests.author}
             )
-        ]
-        for page in pages:
-            with self.subTest(page=page):
-                response = PostPagesTests.user_client.get(page)
-                self.assertTrue(
-                    post in response.context['page_obj'].object_list
-                )
+        )
+
+    def test_following_auth(self):
+        self.assertTrue(
+            Follow.objects.filter(
+                user=FollowTests.user,
+                author=FollowTests.author
+            ).exists()
+        )
+        FollowTests.user_client.get(
+            reverse(
+                'posts:profile_unfollow',
+                kwargs={'username': FollowTests.author}
+            )
+        )
+        self.assertFalse(
+            Follow.objects.filter(
+                user=FollowTests.user,
+                author=FollowTests.author
+            ).exists()
+        )
+
+    def test_new_post_follow(self):
+        user = User.objects.create_user(username='NameNo')
+        user_client = Client()
+        user_client.force_login(user)
+        post = Post.objects.create(
+            text='Тестовый текст поста.',
+            author=FollowTests.author,
+        )
+        response = FollowTests.user_client.get(
+            reverse(
+                'posts:follow_index'
+            )
+        )
+        self.assertEqual(
+            post.id, response.context['page_obj'][0].id
+        )
+        response = user_client.get(
+            reverse(
+                'posts:follow_index'
+            )
+        )
+        self.assertEqual(len(response.context['page_obj']), 0)

@@ -25,8 +25,12 @@ SECRET_KEY = '$1=l_)+f9^ikc3qlap1xie$*z16&yzyhp$nir3yg!$w7uz8x2%'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = [
+    'localhost',
+    '127.0.0.1',
+    '[::1]',
+    'testserver',
+]
 
 # Application definition
 
@@ -41,6 +45,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'sorl.thumbnail',
 ]
 
 MIDDLEWARE = [
@@ -78,6 +83,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'yatube.wsgi.application'
 
+CSRF_FAILURE_VIEW = 'core.views.csrf_failure'
 
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
@@ -122,9 +128,18 @@ USE_L10N = True
 
 USE_TZ = True
 
+# Cache
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+    }
+}
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 STATIC_URL = '/static/'
 

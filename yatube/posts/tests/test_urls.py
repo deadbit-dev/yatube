@@ -71,6 +71,15 @@ class PostURLTests(TestCase):
                 reverse('users:login') + '?next=' + reverse(
                     'posts:post_create'
                 )
+            ),
+            reverse(
+                'posts:add_comment',
+                kwargs={'post_id': PostURLTests.post.id}
+            ): (
+                reverse('users:login') + '?next=' + reverse(
+                    'posts:add_comment',
+                    kwargs={'post_id': PostURLTests.post.id}
+                )
             )
         }
         for adress, redirect in urls_redirect.items():
