@@ -25,7 +25,11 @@ class PaginatorTest(TestCase):
         cls.user_client.force_login(cls.user)
         cls.count_posts_on_page = 10
         cls.count_posts = 15
+<<<<<<< HEAD
         cls.rest_posts = cls.count_posts % cls.count_posts_on_page
+=======
+        cls.total_posts = cls.count_posts % cls.count_posts_on_page
+>>>>>>> 17f4ac79e765a3b6afaf6fbe3e8f5164b2dac356
         cls.group = Group.objects.create(
             title='Тестовый заголовок',
             slug='test-slug',
@@ -67,7 +71,11 @@ class PaginatorTest(TestCase):
                 )
                 self.assertEqual(
                     len(response.context['page_obj']),
+<<<<<<< HEAD
                     PaginatorTest.rest_posts
+=======
+                    PaginatorTest.total_posts
+>>>>>>> 17f4ac79e765a3b6afaf6fbe3e8f5164b2dac356
                 )
 
 
@@ -266,13 +274,18 @@ class FollowTests(TestCase):
         cls.author_client = Client()
         cls.author_client.force_login(cls.author)
 
+<<<<<<< HEAD
     def test_following_auth(self):
+=======
+    def setUp(self):
+>>>>>>> 17f4ac79e765a3b6afaf6fbe3e8f5164b2dac356
         FollowTests.user_client.get(
             reverse(
                 'posts:profile_follow',
                 kwargs={'username': FollowTests.author}
             )
         )
+<<<<<<< HEAD
         follow = Follow.objects.last()
         self.assertEqual(follow.user, FollowTests.user)
         self.assertEqual(follow.author, FollowTests.author)
@@ -285,12 +298,23 @@ class FollowTests(TestCase):
             )
         )
         follows_count = Follow.objects.count()
+=======
+
+    def test_following_auth(self):
+        self.assertTrue(
+            Follow.objects.filter(
+                user=FollowTests.user,
+                author=FollowTests.author
+            ).exists()
+        )
+>>>>>>> 17f4ac79e765a3b6afaf6fbe3e8f5164b2dac356
         FollowTests.user_client.get(
             reverse(
                 'posts:profile_unfollow',
                 kwargs={'username': FollowTests.author}
             )
         )
+<<<<<<< HEAD
         self.assertEqual(Follow.objects.count(), follows_count - 1)
 
     def test_new_post_follow(self):
@@ -300,6 +324,19 @@ class FollowTests(TestCase):
                 kwargs={'username': FollowTests.author}
             )
         )
+=======
+        self.assertFalse(
+            Follow.objects.filter(
+                user=FollowTests.user,
+                author=FollowTests.author
+            ).exists()
+        )
+
+    def test_new_post_follow(self):
+        user = User.objects.create_user(username='NameNo')
+        user_client = Client()
+        user_client.force_login(user)
+>>>>>>> 17f4ac79e765a3b6afaf6fbe3e8f5164b2dac356
         post = Post.objects.create(
             text='Тестовый текст поста.',
             author=FollowTests.author,
@@ -312,6 +349,7 @@ class FollowTests(TestCase):
         self.assertEqual(
             post.id, response.context['page_obj'][0].id
         )
+<<<<<<< HEAD
 
     def test_new_post_unfollow(self):
         FollowTests.user_client.get(
@@ -327,6 +365,8 @@ class FollowTests(TestCase):
         user = User.objects.create_user(username='NameNo')
         user_client = Client()
         user_client.force_login(user)
+=======
+>>>>>>> 17f4ac79e765a3b6afaf6fbe3e8f5164b2dac356
         response = user_client.get(
             reverse(
                 'posts:follow_index'
