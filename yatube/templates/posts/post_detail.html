@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% block title %}
+  Пост {{ post.text|truncatechars:30 }}
+{% endblock %}
+{% block content %}
+{% load thumbnail %}
+  <div class="card shadow">
+    <div class="row">
+      <aside class="col-12 col-md-3">
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item text-white-50 bg-dark">
+            Дата публикации: {{ post.pub_date|date:"d E Y" }}
+          </li>
+          {% if post.group %}
+            <li class="list-group-item text-white-50 bg-dark">
+              Группа:
+              <a href="{% url 'posts:group_list' post.group.slug %}" class="link-light text-decoration-none">
+                {{ post.group.title }}
+              </a>
+            </li>
+          {% endif %}
+          <li class="list-group-item text-white-50 bg-dark">
+            Автор:
+            <a href="{% url 'posts:profile' post.author.username %}" class="link-light text-decoration-none">
+              {{ post.author.username }}
+            </a>
+          </li>
+          <li class="list-group-item d-flex justify-content-between align-items-center text-white-50 bg-dark">
+            Всего постов автора:  <span >{{ post.author.posts.count }}</span>
+          </li>
+        </ul>
+      </aside>
+      <div class="card-body col-12 col-md-9">
+        <article>
+          <a href="{% url 'posts:post_edit' post.id %}" class="link-dark text-decoration-none">
+            {% thumbnail post.image "960x339" crop="center" upscale=True as im %}
+              <img class="card-img my-2" src="{{ im.url }}">
+            {% endthumbnail %}
+            <p>{{ post.text|linebreaksbr }}</p>
+          </a>
+        </article>
+      </div>
+    </div>
+  </div>
+{% load user_filters %}
+  {% if user.is_authenticated %}
+    <div class="card my-4 shadow">
+      <h5 class="card-header text-white-50 bg-dark">Добавить комментарий:</h5>
+      <div class="card-body">
+        <form method="post" action="{% url 'posts:add_comment' post.id %}">
+          {% include 'includes/form.html' with form=form %}
+          <div class="d-flex">
+            <button type="submit" class="flex-fill btn btn-outline-dark">Отправить</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  {% endif %}
+  {% for comment in comments %}
+    <div class="media mb-4">
+      <div class="media-body">
+        <h5 class="mt-0">
+          <a href="{% url 'posts:profile' comment.author.username %}">
+            {{ comment.author.username }}
+          </a>
+        </h5>
+        <p>
+          {{ comment.text }}
+        </p>
+      </div>
+    </div>
+{% endfor %}
+{% endblock %}
