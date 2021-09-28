@@ -1,7 +1,6 @@
-<<<<<<< HEAD
-Django==2.2.16
+Django==2.2.24
 mixer==7.1.2
-Pillow==8.3.1
+Pillow==8.3.2
 pytest==6.2.4
 pytest-django==4.4.0
 pytest-pythonpath==0.7.3
@@ -9,11 +8,3 @@ requests==2.26.0
 six==1.16.0
 sorl-thumbnail==12.7.0
 django_debug_toolbar==3.2.2
-=======
-Django==2.2.19
-mixer==7.1.2
-Pillow==8.3.1
-requests==2.26.0
-six==1.16.0
-sorl-thumbnail==12.7.0
->>>>>>> 17f4ac79e765a3b6afaf6fbe3e8f5164b2dac356
