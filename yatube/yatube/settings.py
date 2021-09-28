@@ -26,10 +26,8 @@ SECRET_KEY = '$1=l_)+f9^ikc3qlap1xie$*z16&yzyhp$nir3yg!$w7uz8x2%'
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    'localhost',
-    '127.0.0.1',
-    '[::1]',
-    'testserver',
+    'www.deadbitdev.pythonanywhere.com',
+    'deadbitdev.pythonanywhere.com',
 ]
 
 # Application definition
