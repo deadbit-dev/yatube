@@ -7,11 +7,7 @@ from django.contrib.auth import get_user_model
 from django.test import Client, TestCase, override_settings
 from django.urls import reverse
 
-<<<<<<< HEAD
 from ..models import Post, Comment
-=======
-from ..models import Post
->>>>>>> 17f4ac79e765a3b6afaf6fbe3e8f5164b2dac356
 
 User = get_user_model()
 TEMP_MEDIA_ROOT = tempfile.mkdtemp(dir=settings.BASE_DIR)
@@ -104,10 +100,7 @@ class CommentFormTests(TestCase):
             text='Тестовый текст поста.',
             author=CommentFormTests.author
         )
-<<<<<<< HEAD
         comments_count = Comment.objects.count()
-=======
->>>>>>> 17f4ac79e765a3b6afaf6fbe3e8f5164b2dac356
         form_data = {
             'text': 'Текст комментария.'
         }
@@ -118,18 +111,8 @@ class CommentFormTests(TestCase):
             ),
             data=form_data
         )
-<<<<<<< HEAD
         self.assertEqual(Comment.objects.count(), comments_count + 1)
         comment = Comment.objects.last()
-=======
-        response = CommentFormTests.author_client.get(
-            reverse(
-                'posts:post_detail',
-                kwargs={'post_id': post.id}
-            )
-        )
-        comment = response.context['comments'].last()
->>>>>>> 17f4ac79e765a3b6afaf6fbe3e8f5164b2dac356
         self.assertEqual(comment.text, form_data['text'])
         self.assertEqual(comment.author, CommentFormTests.author)
         self.assertEqual(comment.post, post)

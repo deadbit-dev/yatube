@@ -38,7 +38,6 @@ def profile(request, username):
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     user = request.user
-<<<<<<< HEAD
     following = user.is_authenticated and Follow.objects.filter(
         user=user,
         author=author
@@ -47,15 +46,6 @@ def profile(request, username):
         'author': author,
         'page_obj': page_obj,
         'following': following
-=======
-    context = {
-        'author': author,
-        'page_obj': page_obj,
-        'following': Follow.objects.filter(
-            user=user,
-            author=author
-        ).exists() if not user.is_anonymous else None
->>>>>>> 17f4ac79e765a3b6afaf6fbe3e8f5164b2dac356
     }
     return render(request, 'posts/profile.html', context)
 
