@@ -9,7 +9,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    if: ${{ github.repository == 'deadbit-dev/yatube_project' }}
+    if: ${{ github.repository == 'deadbit-dev/yatube' }}
     strategy:
       matrix:
         python-version: [3.7, 3.8, 3.9]
