@@ -1,5 +1,5 @@
-# yatube_project
-[![CI](https://github.com/deadbit-dev/yatube_project/actions/workflows/python-app.yml/badge.svg?branch=main)](https://github.com/deadbit-dev/yatube_project/actions/workflows/python-app.yml)
+# yatube
+[![CI](https://github.com/deadbit-dev/yatube/actions/workflows/python-app.yml/badge.svg?branch=main)](https://github.com/deadbit-dev/yatube/actions/workflows/python-app.yml)
 ### Description
 Your Blog
 ### Technology
