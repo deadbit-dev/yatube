@@ -4,6 +4,7 @@
 {% endblock %}
 {% block content %}
 {% load thumbnail %}
+<!--TODO: to change detail post using by post style -->
   <div class="card shadow">
     <div class="row">
       <aside class="col-12 col-md-3">
@@ -42,6 +43,7 @@
       </div>
     </div>
   </div>
+<!--TODO: to change the comments form using by as post style -->
 {% load user_filters %}
   {% if user.is_authenticated %}
     <div class="card my-4 shadow">
@@ -56,6 +58,7 @@
       </div>
     </div>
   {% endif %}
+  <!--TODO: to change the comments using by as post style -->
   {% for comment in comments %}
     <div class="media mb-4">
       <div class="media-body">

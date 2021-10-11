@@ -266,18 +266,22 @@ class FollowTests(TestCase):
         cls.author_client = Client()
         cls.author_client.force_login(cls.author)
 
+ 
     def test_following_auth(self):
+        #FIXME: connection through ORM
         FollowTests.user_client.get(
             reverse(
                 'posts:profile_follow',
                 kwargs={'username': FollowTests.author}
             )
         )
+        #FIXME: necessary to calculate that a BD increased by one object
         follow = Follow.objects.last()
         self.assertEqual(follow.user, FollowTests.user)
         self.assertEqual(follow.author, FollowTests.author)
 
     def test_unfollow_auth(self):
+        #FIXME: connection through ORM
         FollowTests.user_client.get(
             reverse(
                 'posts:profile_follow',

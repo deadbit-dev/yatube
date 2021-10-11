@@ -24,6 +24,7 @@ class UserPagesTests(TestCase):
             reverse(
                 'users:password_reset_done'
             ): 'users/password_reset_done.html',
+            #FIXME: users:password_reset_confirm view
             # reverse(
             #    'users:password_reset_confirm'
             # ): 'users/password_reset_confirm.html',
@@ -39,6 +40,7 @@ class UserPagesTests(TestCase):
     def test_pages_uses_correct_template_for_user(self):
         templates_pages_names = {
             reverse('users:logout'): 'users/logged_out.html',
+            #FIXME: users:password_change view
             # reverse(
             #    'users:password_change'
             # ): 'users/password_change_form.html',

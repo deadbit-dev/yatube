@@ -48,6 +48,7 @@ urlpatterns = [
             template_name='users/password_reset_done.html'),
         name='password_reset_done'
     ),
+    #FIXME: don't work castom page
     # path(
     #    'reset/<uidb64>/<token>/',
     #    PasswordResetConfirmView.as_view(

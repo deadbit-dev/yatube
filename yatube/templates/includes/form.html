@@ -1,5 +1,6 @@
 {% load user_filters %}
 {% csrf_token %}
+<!--TODO: to change style form-->
 {% for field in form %}
   <div class="form-group row my-3 p-3">
     <label for="{{ field.id_for_label }}">
