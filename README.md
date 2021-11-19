@@ -1,7 +1,7 @@
 # yatube
 [![CI](https://github.com/deadbit-dev/yatube/actions/workflows/python-app.yml/badge.svg?branch=main)](https://github.com/deadbit-dev/yatube/actions/workflows/python-app.yml)
 ### Description
-Your Blog
+Your Blog, try that 👀 http://deadbitdev.pythonanywhere.com/
 ### Technology
 Python 3.9.6
 Django 2.2.19
